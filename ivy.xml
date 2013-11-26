@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ivy-module version="2.0"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd">
+    <info organisation="admiralhackbar" module="kdtree" />
+    <dependency org="com.google.code.findbugs" name="jsr305" rev="2.0.2"/>
+    <dependency org="com.google.guava" name="guava" rev="12.0" />
+
+</ivy-module>

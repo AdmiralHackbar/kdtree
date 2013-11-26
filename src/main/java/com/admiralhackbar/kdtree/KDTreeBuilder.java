@@ -18,12 +18,14 @@ public class KDTreeBuilder<T> {
         this.divisors = divisors;
     }
 
-    public void add(@Nonnull final T value) {
+    public KDTreeBuilder<T> add(@Nonnull final T value) {
         this.values.add(value);
+        return this;
     }
 
-    public void addAll(@Nonnull final Collection<T> values) {
+    public KDTreeBuilder<T> addAll(@Nonnull final Collection<T> values) {
         this.values.addAll(values);
+        return this;
     }
 
     public KDTree<T> build() {

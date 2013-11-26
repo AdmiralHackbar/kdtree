@@ -35,6 +35,15 @@ public class KDTree<T> {
     }
 
     @Nullable
+    public T find (@Nonnull final T value) {
+        float[] attributes = new float[getNumDimensions()];
+        for (int i = 0; i < getNumDimensions(); i++) {
+            attributes[i] = divisors.get(i).apply(value);
+        }
+        return find(attributes);
+    }
+
+    @Nullable
     public T find(@Nonnull final float[] attributes) {
         int currentDimension = 1;
         KDTreeNode<T> currentNode = root;

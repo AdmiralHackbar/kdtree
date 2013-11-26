@@ -4,6 +4,7 @@ import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 
 import javax.annotation.Nonnull;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -18,7 +19,11 @@ public class KDTreeBuilder<T> {
     }
 
     public void add(@Nonnull final T value) {
-        values.add(value);
+        this.values.add(value);
+    }
+
+    public void addAll(@Nonnull final Collection<T> values) {
+        this.values.addAll(values);
     }
 
     public KDTree<T> build() {

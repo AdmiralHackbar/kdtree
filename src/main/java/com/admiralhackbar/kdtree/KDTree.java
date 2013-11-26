@@ -32,7 +32,7 @@ public class KDTree<T> {
         return divisors;
     }
 
-    public T find(final float[] attributes) {
+    public T find(@Nonnull final float[] attributes) {
         int currentDimension = 1;
         KDTreeNode<T> currentNode = root;
         while(currentNode != null) {

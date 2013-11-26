@@ -1,6 +1,7 @@
 package com.admiralhackbar.kdtree;
 
 import com.google.common.base.Function;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 
 import javax.annotation.Nonnull;
@@ -45,6 +46,7 @@ public class KDTree<T> {
 
     @Nullable
     public T find(@Nonnull final float[] attributes) {
+        Preconditions.checkArgument(attributes.length == getNumDimensions(), "The number of attributes and the number of dimensions do not match.");
         int currentDimension = 1;
         KDTreeNode<T> currentNode = root;
         while(currentNode != null) {

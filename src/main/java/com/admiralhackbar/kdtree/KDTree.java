@@ -69,7 +69,6 @@ public class KDTree<T> {
                 currentDimension = getNumDimensions() == currentDimension ? 1 : currentDimension + 1;
             }
         }
-        // Will never be executed
         return null;
     }
 }

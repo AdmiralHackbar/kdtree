@@ -4,6 +4,8 @@ import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -32,6 +34,7 @@ public class KDTree<T> {
         return divisors;
     }
 
+    @Nullable
     public T find(@Nonnull final float[] attributes) {
         int currentDimension = 1;
         KDTreeNode<T> currentNode = root;

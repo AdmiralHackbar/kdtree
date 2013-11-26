@@ -9,8 +9,9 @@ public class KDTreeNode<T> {
 
     private final int dimension;
     private final float division;
-    private final T value;
 
+    @Nullable
+    private final T value;
     @Nullable
     private KDTreeNode left;
     @Nullable
@@ -38,7 +39,7 @@ public class KDTreeNode<T> {
         return division;
     }
 
-    @Nonnull
+    @Nullable
     public T getValue() {
         return value;
     }

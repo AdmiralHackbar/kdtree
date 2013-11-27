@@ -29,12 +29,12 @@ public class KDTreeBuilder<T> {
     }
 
     public KDTree<T> build() {
-        return new KDTree<T>(buildRoot(values, 1), divisors);
+        return new KDTree<T>(buildRoot(values, 1, 0), divisors);
     }
 
-    private KDTreeNode buildRoot(@Nonnull final List<T> values, final int dimension) {
+    private KDTreeNode buildRoot(@Nonnull final List<T> values, final int dimension, final int height) {
         if (values.size() == 1) {
-            return new KDTreeNode(dimension, values.get(0));
+            return new KDTreeNode(dimension, height, values.get(0));
         } else {
             final Function<T, Float> divisor = divisors.get(dimension -1);
             final SplitList<T> splitList = new SplitList<T>(values, divisor);
@@ -42,8 +42,9 @@ public class KDTreeBuilder<T> {
 
             return new KDTreeNode(nextDimension,
                     divisor.apply(splitList.getLeftList().get(splitList.getLeftList().size() -1)),
-                    buildRoot(splitList.getLeftList(), nextDimension),
-                    buildRoot(splitList.getRightList(), nextDimension)
+                    height,
+                    buildRoot(splitList.getLeftList(), nextDimension, height +1),
+                    buildRoot(splitList.getRightList(), nextDimension, height +1)
             );
         }
     }

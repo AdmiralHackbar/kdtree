@@ -49,7 +49,7 @@ public class KDTree<T> {
             if (currentNode instanceof LeafNode) {
                 final LeafNode<T> leafNode = (LeafNode<T>)currentNode;
                 // Either this node contains the value or it doesn't.
-                if (Arrays.equals(attributes, getAttributes(leafNode.getValue()))) {
+                if (leafNode.getValue() != null && Arrays.equals(attributes, getAttributes(leafNode.getValue()))) {
                     return leafNode.getValue();
                 } else {
                     return null;

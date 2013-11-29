@@ -33,18 +33,18 @@ public class KDTreeBuilder<T> {
     }
 
     private KDTreeNode buildRoot(@Nonnull final List<T> values, final int dimension, final int height) {
+        final Function<T, Float> divisor = divisors.get(dimension -1);
         if (values.size() == 1) {
-            return new KDTreeNode(dimension, height, values.get(0));
+            return new LeafNode(values.get(0), dimension, height, divisor.apply(values.get(0)));
         } else {
-            final Function<T, Float> divisor = divisors.get(dimension -1);
             final SplitList<T> splitList = new SplitList<T>(values, divisor);
             int nextDimension = dimension == divisors.size() ? 1 : dimension + 1;
 
-            return new KDTreeNode(nextDimension,
-                    divisor.apply(splitList.getLeftList().get(splitList.getLeftList().size() -1)),
+            return new ParentNode(buildRoot(splitList.getLeftList(), nextDimension, height +1),
+                    buildRoot(splitList.getRightList(), nextDimension, height +1),
+                    nextDimension,
                     height,
-                    buildRoot(splitList.getLeftList(), nextDimension, height +1),
-                    buildRoot(splitList.getRightList(), nextDimension, height +1)
+                    divisor.apply(splitList.getLeftList().get(splitList.getLeftList().size() -1))
             );
         }
     }

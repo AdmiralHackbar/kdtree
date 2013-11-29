@@ -49,21 +49,23 @@ public class KDTree<T> {
         int currentDimension = 1;
         KDTreeNode<T> currentNode = root;
         while(currentNode != null) {
-            if (currentNode.isLeaf()) {
+            if (currentNode instanceof LeafNode) {
+                final LeafNode<T> leafNode = (LeafNode<T>)currentNode;
                 // Either this node contains the value or it doesn't.
                 final Function<T, Float> divisor = divisors.get(currentDimension -1);
-                final float valueAttr = divisor.apply(currentNode.getValue());
+                final float valueAttr = divisor.apply(leafNode.getValue());
                 if (valueAttr == attributes[currentDimension -1]) {
-                    return currentNode.getValue();
+                    return leafNode.getValue();
                 } else {
                     return null;
                 }
             } else {
+                final ParentNode<T> parentNode = (ParentNode<T>)currentNode;
                 if (currentNode.getDivision() >= attributes[currentDimension -1]) {
                     // If the nodes division >= the attribute value, the value may be stored in the left tree.
-                    currentNode = currentNode.getLeft();
+                    currentNode = parentNode.getLeft();
                 } else {
-                    currentNode = currentNode.getRight();
+                    currentNode = parentNode.getRight();
                 }
                 currentDimension = getNumDimensions() == currentDimension ? 1 : currentDimension + 1;
             }

@@ -6,6 +6,7 @@ import com.google.common.collect.ImmutableList;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -36,11 +37,7 @@ public class KDTree<T> {
 
     @Nullable
     public T find (@Nonnull final T value) {
-        float[] attributes = new float[getNumDimensions()];
-        for (int i = 0; i < getNumDimensions(); i++) {
-            attributes[i] = divisors.get(i).apply(value);
-        }
-        return find(attributes);
+        return find(getAttributes(value));
     }
 
     @Nullable
@@ -52,9 +49,7 @@ public class KDTree<T> {
             if (currentNode instanceof LeafNode) {
                 final LeafNode<T> leafNode = (LeafNode<T>)currentNode;
                 // Either this node contains the value or it doesn't.
-                final Function<T, Float> divisor = divisors.get(currentDimension -1);
-                final float valueAttr = divisor.apply(leafNode.getValue());
-                if (valueAttr == attributes[currentDimension -1]) {
+                if (Arrays.equals(attributes, getAttributes(leafNode.getValue()))) {
                     return leafNode.getValue();
                 } else {
                     return null;
@@ -71,5 +66,13 @@ public class KDTree<T> {
             }
         }
         return null;
+    }
+
+    private float[] getAttributes(@Nonnull final T value) {
+        float[] attributes = new float[getNumDimensions()];
+        for (int i = 0; i < getNumDimensions(); i++) {
+            attributes[i] = divisors.get(i).apply(value);
+        }
+        return attributes;
     }
 }

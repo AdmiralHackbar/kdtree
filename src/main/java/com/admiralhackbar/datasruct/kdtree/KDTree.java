@@ -83,10 +83,10 @@ public class KDTree<T> {
 
     @Nullable
     public List<T> findKNearestValues(@Nonnull final float[] attributes, final int k) {
-        final PriorityQueue<KDTreeNode<T>> nodeQueue = new PriorityQueue<KDTreeNode<T>>(k * k, new Comparator<KDTreeNode<T>>() {
+        final PriorityQueue<DistanceNode<T>> nodeQueue = new PriorityQueue<DistanceNode<T>>(k * k, new Comparator<DistanceNode<T>>() {
             @Override
-            public int compare(KDTreeNode<T> o1, KDTreeNode<T> o2) {
-                return computeDistance(attributes, o1) <= computeDistance(attributes, o2) ? -1 : 1;
+            public int compare(DistanceNode<T> o1, DistanceNode<T> o2) {
+                return o1.distance <= o2.distance ? -1 : 1;
             }
         });
 
@@ -97,20 +97,19 @@ public class KDTree<T> {
             }
         };
         final List<T> valuesQueue = Lists.newArrayList();
-
-        nodeQueue.add(root);
+        nodeQueue.add(new DistanceNode<T>(root, computeDistance(attributes, root)));
         while(!foundNearestKNodes(nodeQueue, valuesQueue, k, attributes)) {
-            final KDTreeNode<T> node = nodeQueue.remove();
-            if (node instanceof ParentNode) {
-                final ParentNode<T> parentNode = (ParentNode<T>)node;
+            final DistanceNode<T> node = nodeQueue.remove();
+            if (node.node instanceof ParentNode) {
+                final ParentNode<T> parentNode = (ParentNode<T>)node.node;
                 if (parentNode.getRight() != null) {
-                    nodeQueue.add(parentNode.getRight());
+                    nodeQueue.add(new DistanceNode<T>(parentNode.getRight(), computeDistance(attributes, parentNode.getRight())));
                 }
                 if (parentNode.getLeft() != null) {
-                    nodeQueue.add(parentNode.getLeft());
+                    nodeQueue.add(new DistanceNode<T>(parentNode.getLeft(), computeDistance(attributes, parentNode.getLeft())));
                 }
             } else {
-                final LeafNode<T> leafNode = (LeafNode<T>)node;
+                final LeafNode<T> leafNode = (LeafNode<T>)node.node;
                 valuesQueue.add(leafNode.getValue());
                 Collections.sort(valuesQueue, sortedComparator);
             }
@@ -123,23 +122,21 @@ public class KDTree<T> {
         return outputList;
     }
 
-    protected boolean foundNearestKNodes(@Nonnull final PriorityQueue<KDTreeNode<T>> nodeQueue, @Nonnull final List<T> valuesQueue, final int k, final float[] attiributes) {
+    protected boolean foundNearestKNodes(@Nonnull final PriorityQueue<DistanceNode<T>> nodeQueue, @Nonnull final List<T> valuesQueue, final int k, final float[] attiributes) {
         if (nodeQueue.size() == 0) {
             return true;
         }
 
-        if (valuesQueue.size() > k && nodeQueue.peek() instanceof ParentNode) {
-            return computeDistance(attiributes, nodeQueue.peek()) > computeDistance(attiributes, valuesQueue.get(k));
-        }
-
-        if (valuesQueue.size() > k && nodeQueue.peek() instanceof LeafNode) {
-            final T value = ((LeafNode<T>)nodeQueue.peek()).getValue();
-            return computeDistance(attiributes, value) > computeDistance(attiributes, valuesQueue.get(k));
+        if (valuesQueue.size() > k && nodeQueue.peek().node instanceof ParentNode) {
+            return nodeQueue.peek().distance > nodeQueue.peek().distance;
         }
         return false;
     }
 
     protected double computeDistance(@Nonnull final float[] attributes, @Nonnull final KDTreeNode<T> node) {
+        if (node instanceof LeafNode) {
+            return computeDistance(attributes, ((LeafNode<T>)node).getValue());
+        }
         return Math.pow(attributes[node.getDimension() -1] - node.getDivision(), 2);
     }
 
@@ -151,5 +148,15 @@ public class KDTree<T> {
             distance += Math.pow(attr1[i] - attr2[i], 2);
         }
         return distance;
+    }
+
+    private final class DistanceNode<T> {
+        private final KDTreeNode<T> node;
+        private final double distance;
+
+        private DistanceNode(@Nonnull final KDTreeNode<T> node, final double distance) {
+            this.node = node;
+            this.distance = distance;
+        }
     }
 }

@@ -3,11 +3,11 @@ package com.admiralhackbar.datasruct.kdtree;
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 /**
  */
@@ -74,5 +74,82 @@ public class KDTree<T> {
             attributes[i] = divisors.get(i).apply(value);
         }
         return attributes;
+    }
+
+    @Nullable
+    public List<T> findKNearestValues(@Nonnull final T value, final int k) {
+        return findKNearestValues(getAttributes(value), k);
+    }
+
+    @Nullable
+    public List<T> findKNearestValues(@Nonnull final float[] attributes, final int k) {
+        final PriorityQueue<KDTreeNode<T>> nodeQueue = new PriorityQueue<KDTreeNode<T>>(k * k, new Comparator<KDTreeNode<T>>() {
+            @Override
+            public int compare(KDTreeNode<T> o1, KDTreeNode<T> o2) {
+                return computeDistance(attributes, o1) <= computeDistance(attributes, o2) ? -1 : 1;
+            }
+        });
+
+        final Comparator<T> sortedComparator = new Comparator<T>() {
+            @Override
+            public int compare(T o1, T o2) {
+                return computeDistance(attributes, o1) <= computeDistance(attributes, o2) ? -1 : 1;
+            }
+        };
+        final List<T> valuesQueue = Lists.newArrayList();
+
+        nodeQueue.add(root);
+        while(!foundNearestKNodes(nodeQueue, valuesQueue, k, attributes)) {
+            final KDTreeNode<T> node = nodeQueue.remove();
+            if (node instanceof ParentNode) {
+                final ParentNode<T> parentNode = (ParentNode<T>)node;
+                if (parentNode.getRight() != null) {
+                    nodeQueue.add(parentNode.getRight());
+                }
+                if (parentNode.getLeft() != null) {
+                    nodeQueue.add(parentNode.getLeft());
+                }
+            } else {
+                final LeafNode<T> leafNode = (LeafNode<T>)node;
+                valuesQueue.add(leafNode.getValue());
+                Collections.sort(valuesQueue, sortedComparator);
+            }
+        }
+
+        final List<T> outputList = Lists.newArrayListWithCapacity(k);
+        for (int i = 0; i < k && valuesQueue.size() > 0; i++) {
+            outputList.add(valuesQueue.get(i));
+        }
+        return outputList;
+    }
+
+    protected boolean foundNearestKNodes(@Nonnull final PriorityQueue<KDTreeNode<T>> nodeQueue, @Nonnull final List<T> valuesQueue, final int k, final float[] attiributes) {
+        if (nodeQueue.size() == 0) {
+            return true;
+        }
+
+        if (valuesQueue.size() > k && nodeQueue.peek() instanceof ParentNode) {
+            return computeDistance(attiributes, nodeQueue.peek()) > computeDistance(attiributes, valuesQueue.get(k));
+        }
+
+        if (valuesQueue.size() > k && nodeQueue.peek() instanceof LeafNode) {
+            final T value = ((LeafNode<T>)nodeQueue.peek()).getValue();
+            return computeDistance(attiributes, value) > computeDistance(attiributes, valuesQueue.get(k));
+        }
+        return false;
+    }
+
+    protected double computeDistance(@Nonnull final float[] attributes, @Nonnull final KDTreeNode<T> node) {
+        return Math.pow(attributes[node.getDimension() -1] - node.getDivision(), 2);
+    }
+
+    protected double computeDistance(@Nonnull final float[] attr1, @Nonnull final T value2) {
+        double distance = 0;
+        final float[] attr2 = getAttributes(value2);
+
+        for (int i = 0; i < attr1.length; i++) {
+            distance += Math.pow(attr1[i] - attr2[i], 2);
+        }
+        return distance;
     }
 }

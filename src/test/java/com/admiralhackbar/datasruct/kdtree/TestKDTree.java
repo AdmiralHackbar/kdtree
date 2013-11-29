@@ -42,4 +42,37 @@ public class TestKDTree {
         Assert.assertNull(kdTree.find(new Point(0,0)));
 
     }
+
+    @Test
+    public void testFindKNearestValues() {
+        List<Point> points = Lists.newArrayList();
+        points.add(new Point(1,1));
+        points.add(new Point(2,2));
+        points.add(new Point(3,3));
+        points.add(new Point(4,4));
+        points.add(new Point(5,5));
+        List<Function<Point, Float>> functions = Lists.newArrayList();
+        functions.add(new Function<Point, Float>() {
+            @Nullable
+            @Override
+            public Float apply(@Nullable Point input) {
+                return (float)input.getX();
+            }
+        });
+        functions.add(new Function<Point, Float>() {
+            @Nullable
+            @Override
+            public Float apply(@Nullable Point input) {
+                return (float)input.getY();
+            }
+        });
+
+        final KDTree<Point> kdTree = (new KDTreeBuilder<Point>(functions)).addAll(points).build();
+
+        List<Point> foundPoints = kdTree.findKNearestValues(new Point(3,3), 3);
+        Assert.assertEquals(3, foundPoints.size());
+        Assert.assertEquals(new Point(3,3), foundPoints.get(0));
+        Assert.assertEquals(new Point(4,4), foundPoints.get(1));
+        Assert.assertEquals(new Point(2,2), foundPoints.get(2));
+    }
 }

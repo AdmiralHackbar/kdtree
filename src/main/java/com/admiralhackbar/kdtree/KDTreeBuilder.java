@@ -54,7 +54,7 @@ public class KDTreeBuilder<T> {
         private List<T> leftList;
         private List<T> rightList;
 
-        public SplitList(final List<T> values, final Function<T, Float> divisor) {
+        public SplitList(@Nonnull final List<T> values, @Nonnull final Function<T, Float> divisor) {
             Collections.sort(values, new Comparator<T>() {
                 @Override
                 public int compare(T o1, T o2) {

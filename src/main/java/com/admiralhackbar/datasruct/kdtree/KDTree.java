@@ -111,6 +111,7 @@ public class KDTree<T> {
             } else {
                 final LeafNode<T> leafNode = (LeafNode<T>)node.node;
                 valuesQueue.add(leafNode.getValue());
+                // TODO: Implement a more efficient solution that sorting on each add.
                 Collections.sort(valuesQueue, sortedComparator);
             }
         }

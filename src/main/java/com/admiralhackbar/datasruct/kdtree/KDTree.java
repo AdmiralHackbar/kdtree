@@ -1,4 +1,4 @@
-package com.admiralhackbar.kdtree;
+package com.admiralhackbar.datasruct.kdtree;
 
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;

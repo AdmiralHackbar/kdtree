@@ -1,8 +1,5 @@
 package com.admiralhackbar.datasruct.kdtree;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 /**
  */
 public abstract class KDTreeNode<T> {

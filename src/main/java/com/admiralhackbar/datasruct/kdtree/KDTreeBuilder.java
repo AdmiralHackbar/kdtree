@@ -18,20 +18,24 @@ public class KDTreeBuilder<T> {
         this.divisors = divisors;
     }
 
+    @Nonnull
     public KDTreeBuilder<T> add(@Nonnull final T value) {
         this.values.add(value);
         return this;
     }
 
+    @Nonnull
     public KDTreeBuilder<T> addAll(@Nonnull final Collection<T> values) {
         this.values.addAll(values);
         return this;
     }
 
+    @Nonnull
     public KDTree<T> build() {
         return new KDTree<T>(buildRoot(values, 1, 0), divisors);
     }
 
+    @Nonnull
     private KDTreeNode buildRoot(@Nonnull final List<T> values, final int dimension, final int height) {
         final Function<T, Float> divisor = divisors.get(dimension -1);
         if (values.size() == 1) {
@@ -67,10 +71,12 @@ public class KDTreeBuilder<T> {
             rightList = values.subList(values.size() / 2, values.size());
         }
 
+        @Nonnull
         private List<T> getLeftList() {
             return leftList;
         }
 
+        @Nonnull
         private List<T> getRightList() {
             return rightList;
         }
